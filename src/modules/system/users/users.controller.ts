@@ -1,22 +1,8 @@
-import {Controller, Post, Body, Get, ParseArrayPipe, Param, Query, Put, Delete, Patch} from '@nestjs/common';
-import {
-    ApiTags,
-    ApiCreatedResponse,
-    ApiBody,
-    ApiOperation,
-    ApiUnauthorizedResponse,
-    ApiBadGatewayResponse,
-    ApiBadRequestResponse,
-    ApiQuery,
-    ApiOkResponse,
-    ApiParam,
-} from '@nestjs/swagger';
+import {Controller} from '@nestjs/common';
 import {Crud, CrudController, CrudRequest, Override, ParsedBody, ParsedRequest} from '@nestjsx/crud';
-import {hash} from 'bcryptjs';
 import {UsersService} from './services/users.service';
-import {CreateUserDto, UpdateUserDto} from './dto';
-import {DataOutput, IUser} from 'src/common/interfaces';
 import {User} from './entities';
+import {hash} from 'bcryptjs';
 
 @Crud({
     model: {
@@ -44,5 +30,29 @@ export class UsersController implements CrudController<User> {
     get base(): CrudController<User> {
         return this;
     }
+
+    @Override()
+    async createOne(
+        @ParsedRequest() req: CrudRequest,
+        @ParsedBody() dto: any,
+    ) {
+
+        if (dto.password) {
+            dto.password = await hash(dto.password, 10);
+        }
+        return this.base.createOneBase(req, dto);
+    }
+
+    @Override('updateOneBase')
+    async coolFunction(
+        @ParsedRequest() req: CrudRequest,
+        @ParsedBody() dto: any,
+    ) {
+        if (dto.password) {
+            dto.password = await hash(dto.password, 10);
+        }
+        return this.base.updateOneBase(req, dto);
+    }
+
 
 }
