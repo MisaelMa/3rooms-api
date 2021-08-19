@@ -19,18 +19,8 @@ export class User extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
   username: string;
 
   @ApiProperty()
-  @Exclude()
-  @Column({ type: 'varchar', length: 500, nullable: true, select: false })
+  @Column({ type: 'varchar', length: 500, nullable: true, select: true })
   password: string;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (!this.password) {
-      return;
-    }
-    this.password = await hash(this.password, 10);
-  }
 
   @ApiProperty()
   @Column({ type: 'bool', default: true, select: false })
