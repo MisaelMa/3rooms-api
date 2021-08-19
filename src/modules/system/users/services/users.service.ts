@@ -5,7 +5,6 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from '../entities';
-import { CreateUserDto, UpdateUserDto } from '../dto';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<User> {
@@ -38,9 +37,10 @@ export class UsersService extends TypeOrmCrudService<User> {
    * Create user
    * @param dto CreateUserDto
    */
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: any): Promise<any> {
     const user = this.userRepository.create(dto);
     const result = await this.userRepository.save(user);
+    // @ts-ignore
     delete result.password;
     return result;
   }
@@ -49,7 +49,7 @@ export class UsersService extends TypeOrmCrudService<User> {
    * Create users in batch
    * @param dto Array of CreateUserDto
    */
-  async createBatch(dto: CreateUserDto[]): Promise<User[]> {
+  async createBatch(dto: any[]): Promise<User[]> {
     const users = this.userRepository.create(dto);
     const result = await this.userRepository.save(users).catch((err) => {
       throw new BadGatewayException('Something happened', err);
@@ -114,7 +114,7 @@ export class UsersService extends TypeOrmCrudService<User> {
    * Update an user
    * @param dto UpdateUserDto
    */
-  async update(dto: UpdateUserDto): Promise<User> {
+  async update(dto: any): Promise<any> {
     if (!dto.id) {
       throw new BadRequestException('You need to provide a valid id');
     }
@@ -126,6 +126,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     delete dto.id; // Deleting this input to avoid issues with entity
     const editedUser = Object.assign(user, dto);
     const result = await this.userRepository.save<User>(editedUser);
+    // @ts-ignore
     delete result.password;
     return result;
   }
@@ -134,7 +135,7 @@ export class UsersService extends TypeOrmCrudService<User> {
    * Update users in batch
    * @param dtos Array of UpdateUserDto
    */
-  async updateMany(dtos: UpdateUserDto[]): Promise<User[]> {
+  async updateMany(dtos: any[]): Promise<User[]> {
     const updatedUsers = [];
     for (const dto of dtos) {
       if (dto.id) {
